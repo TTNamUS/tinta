@@ -1975,7 +1975,8 @@ void renderHelpOverlay(App& app) {
         {L"Space / PgDn", tr(app, "help.nav.page_down")},
         {L"PgUp",         tr(app, "help.nav.page_up")},
         {L"Home / End",   tr(app, "help.nav.jump_start_end")},
-        {L"Ctrl+Scroll",  tr(app, "help.nav.zoom")},
+        {L"Ctrl+Scroll / Ctrl++/-", tr(app, "help.nav.zoom")},
+        {L"Ctrl+0",       tr(app, "help.nav.zoom_reset")},
     };
 
     const HelpEntry overlayEntries[] = {

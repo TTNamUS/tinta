@@ -487,19 +487,35 @@ static void commitFolderBrowserNaming(App& app) {
     if (app.hwnd) InvalidateRect(app.hwnd, nullptr, FALSE);
 }
 
-// Ctrl+wheel zoom. The scroll anchor scales immediately, but text format
+// Ctrl+wheel / Ctrl++/- zoom. The scroll anchor scales immediately, but text format
 // recreation (~47 COM objects) + full relayout is applied on the leading
-// tick and then coalesced via TIMER_ZOOM_APPLY while the wheel keeps spinning.
-static void applyZoomDelta(App& app, float delta) {
+// tick and then coalesced via TIMER_ZOOM_APPLY while zoom events keep arriving.
+void applyZoomDelta(App& app, float delta) {
     float oldZoom = app.zoomFactor;
-    app.zoomFactor = std::max(0.5f, std::min(3.0f, app.zoomFactor + delta * 0.1f));
+    float newZoom = std::max(0.5f, std::min(3.0f, app.zoomFactor + delta * 0.1f));
+    if (fabsf(newZoom - oldZoom) < 0.001f) return;
+    app.zoomFactor = newZoom;
     float zoomRatio = app.zoomFactor / oldZoom;
     app.scrollY *= zoomRatio;
     app.targetScrollY *= zoomRatio;
     if (!app.zoomApplyPending) {
         updateTextFormats(app);
         app.zoomApplyPending = true;
-        SetTimer(app.hwnd, TIMER_ZOOM_APPLY, 80, nullptr);
+        if (app.hwnd) SetTimer(app.hwnd, TIMER_ZOOM_APPLY, 80, nullptr);
+    }
+}
+
+void applyZoomReset(App& app) {
+    float oldZoom = app.zoomFactor;
+    if (fabsf(oldZoom - 1.0f) < 0.001f) return;
+    app.zoomFactor = 1.0f;
+    float zoomRatio = app.zoomFactor / oldZoom;
+    app.scrollY *= zoomRatio;
+    app.targetScrollY *= zoomRatio;
+    if (!app.zoomApplyPending) {
+        updateTextFormats(app);
+        app.zoomApplyPending = true;
+        if (app.hwnd) SetTimer(app.hwnd, TIMER_ZOOM_APPLY, 80, nullptr);
     }
 }
 
@@ -3445,6 +3461,24 @@ bool handleKeyDown(App& app, HWND hwnd, WPARAM wParam) {
             wParam == VK_SPACE) {
             closeLightbox(app);
             InvalidateRect(hwnd, nullptr, FALSE);
+        } else if (ctrl) {
+            if (wParam == VK_OEM_PLUS || wParam == VK_ADD) {
+                app.lightboxZoom =
+                    std::max(0.2f, std::min(app.lightboxZoom * 1.15f, 10.0f));
+                InvalidateRect(hwnd, nullptr, FALSE);
+                return true;
+            } else if (wParam == VK_OEM_MINUS || wParam == VK_SUBTRACT) {
+                app.lightboxZoom =
+                    std::max(0.2f, std::min(app.lightboxZoom / 1.15f, 10.0f));
+                InvalidateRect(hwnd, nullptr, FALSE);
+                return true;
+            } else if (wParam == '0' || wParam == VK_NUMPAD0) {
+                app.lightboxZoom = 1.0f;
+                app.lightboxPanX = 0;
+                app.lightboxPanY = 0;
+                InvalidateRect(hwnd, nullptr, FALSE);
+                return true;
+            }
         }
         return false;
     }
@@ -3635,6 +3669,21 @@ bool handleKeyDown(App& app, HWND hwnd, WPARAM wParam) {
             int index = (int)(wParam - '1');
             if (index < (int)app.tabs.size()) tabActivate(app, hwnd, index);
             return false;
+        }
+        if (wParam == VK_OEM_PLUS || wParam == VK_ADD) {
+            applyZoomDelta(app, 1.0f);
+            InvalidateRect(hwnd, nullptr, FALSE);
+            return true;
+        }
+        if (wParam == VK_OEM_MINUS || wParam == VK_SUBTRACT) {
+            applyZoomDelta(app, -1.0f);
+            InvalidateRect(hwnd, nullptr, FALSE);
+            return true;
+        }
+        if (wParam == '0' || wParam == VK_NUMPAD0) {
+            applyZoomReset(app);
+            InvalidateRect(hwnd, nullptr, FALSE);
+            return true;
         }
     }
     if (app.showTabSwitcher && wParam == VK_ESCAPE) {

@@ -9,6 +9,9 @@ bool shortcutModifiersAllowed(unsigned key) {
         case 'S': case 'N': case 'V': case 'E': case 'F':
         case VK_TAB: case VK_LEFT: case VK_RIGHT: case VK_UP: case VK_DOWN:
         case VK_HOME: case VK_END: case VK_PRIOR: case VK_NEXT:
+        case VK_OEM_PLUS: case VK_ADD:
+        case VK_OEM_MINUS: case VK_SUBTRACT:
+        case '0': case VK_NUMPAD0:
             return true;
         default: return false;
     }

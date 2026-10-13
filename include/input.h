@@ -13,6 +13,8 @@ void cancelDocumentScrollbarDrag(App& app, HWND hwnd);
 void cancelAppMenuPress(App& app, HWND hwnd);
 // True consumes this keystroke's character translation as well (#195).
 bool handleKeyDown(App& app, HWND hwnd, WPARAM wParam);
+void applyZoomDelta(App& app, float delta);
+void applyZoomReset(App& app);
 void handleContextMenu(App& app, HWND hwnd, LPARAM lParam);
 void handleCharInput(App& app, HWND hwnd, WPARAM wParam);
 void handleDropFiles(App& app, HWND hwnd, WPARAM wParam);

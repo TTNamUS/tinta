@@ -62,7 +62,7 @@ Press **?** at any time to see all shortcuts.
 - **Space / PgDn** - Page down
 - **PgUp** - Page up
 - **Home / End** - Jump to start / end
-- **Ctrl+Scroll** - Zoom in / out
+- **Ctrl+Scroll / Ctrl++/-** - Zoom in / out (**Ctrl+0** to reset)
 
 ### View
 

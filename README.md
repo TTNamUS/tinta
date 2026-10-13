@@ -116,7 +116,7 @@ It's a viewer first: perfect as the double-click default for `.md` and `.mmd` fi
 | `S` | Toggle stats overlay |
 | `Ctrl+C` | Copy selected text (or all if none selected) |
 | `Ctrl+A` | Select all text |
-| `Ctrl+Scroll` | Zoom in/out |
+| `Ctrl+Scroll` / `Ctrl++/-` | Zoom in/out (`Ctrl+0` to reset) |
 | `Arrow keys` / `J/K` | Scroll |
 | `Mouse back/forward` / `Alt+←/→` | Walk link jumps with scroll restore |
 | `Page Up/Down` | Page scroll |

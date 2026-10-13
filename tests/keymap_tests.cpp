@@ -61,6 +61,20 @@ int main() {
     check(translateActionKey(keys, '?', true) == '?', "invalid binding retains default");
     check(!parseKeyName("F13").key && !parseKeyName("F1garbage").key,
           "malformed function-key settings are rejected");
+
+    BYTE origKeys[256]{}, ctrlShiftKeys[256]{};
+    GetKeyboardState(origKeys);
+    ctrlShiftKeys[VK_CONTROL] = 0x80;
+    ctrlShiftKeys[VK_SHIFT] = 0x80;
+    SetKeyboardState(ctrlShiftKeys);
+    check(shortcutModifiersAllowed(VK_OEM_PLUS), "Ctrl+Shift+= allowed for zoom in");
+    check(shortcutModifiersAllowed(VK_ADD), "Ctrl+Shift+Numpad+ allowed for zoom in");
+    check(shortcutModifiersAllowed(VK_OEM_MINUS), "Ctrl+Shift+- allowed for zoom out");
+    check(shortcutModifiersAllowed(VK_SUBTRACT), "Ctrl+Shift+Numpad- allowed for zoom out");
+    check(shortcutModifiersAllowed('0'), "Ctrl+Shift+0 allowed for zoom reset");
+    check(shortcutModifiersAllowed(VK_NUMPAD0), "Ctrl+Shift+Numpad0 allowed for zoom reset");
+    SetKeyboardState(origKeys);
+
     std::cout << "Keymap: " << failures << " failures\n";
     return failures ? 1 : 0;
 }

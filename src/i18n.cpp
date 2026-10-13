@@ -80,6 +80,7 @@ const Entry kEntries[] = {
     { "help.nav.page_up",          L"Page up",                      L"\u5411\u4E0A\u7FFB\u9875",                          L"\u4E0A\u306B\u30DA\u30FC\u30B8\u79FB\u52D5", L"\uD398\uC774\uC9C0 \uC62C\uB9AC\uAE30" },
     { "help.nav.jump_start_end",   L"Jump to start / end",          L"\u8DF3\u8F6C\u5230\u5F00\u5934 / \u7ED3\u5C3E",     L"\u958B\u59CB / \u7D42\u4E86\u306B\u79FB\u52D5", L"\uC2DC\uC791 / \uB05D\uC73C\uB85C \uC774\uB3D9" },
     { "help.nav.zoom",             L"Zoom in / out",                L"\u653E\u5927 / \u7F29\u5C0F",                       L"\u62E1\u5927 / \u7E2E\u5C0F", L"\uD655\uB300 / \uCD95\uC18C" },
+    { "help.nav.zoom_reset",       L"Reset zoom",                   L"\u91CD\u7F6E\u7F29\u653E",                          L"\u30BA\u30FC\u30E0\u3092\u30EA\u30BB\u30C3\u30C8", L"\uD655\uB300/\uCD95\uC18C \uCD08\uAE30\uD654" },
 
     { "help.view.search",          L"Search",                       L"\u641C\u7D22",                                      L"\u691C\u7D22", L"\uAC80\uC0C9" },
     { "help.view.next_match",      L"Next search match",            L"\u4E0B\u4E00\u4E2A\u5339\u914D\u7ED3\u679C",        L"\u6B21\u306E\u691C\u7D22\u7D50\u679C", L"\uB2E4\uC74C \uAC80\uC0C9 \uACB0\uACFC" },
@@ -676,6 +677,10 @@ const BuiltinTranslation kBuiltinTranslations[] = {
       L"Vergr\u00F6\u00DFern / Verkleinern",
       L"Zoom avant / arri\u00E8re",
       L"Ingrandisci / Riduci" },
+    { "help.nav.zoom_reset",
+      L"Zoom zur\u00FCcksetzen",
+      L"R\u00E9initialiser le zoom",
+      L"Reimposta zoom" },
     { "help.view.search",
       L"Suchen",
       L"Rechercher",

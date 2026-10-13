@@ -285,6 +285,70 @@ int main(int argc, char** argv) {
     applyKeymap(app, settings);
     stroke(app, VK_F3);
     check(app.confirmExitPending && !app.showHelp, "Help cannot bypass unsaved-changes confirmation");
+    app.confirmExitPending = false;
+
+    BYTE keyboardState[256]{}, ctrlState[256]{}, ctrlShiftState[256]{};
+    GetKeyboardState(keyboardState);
+    ctrlState[VK_CONTROL] = 0x80;
+    ctrlShiftState[VK_CONTROL] = 0x80;
+    ctrlShiftState[VK_SHIFT] = 0x80;
+
+    // Zoom in / out / reset in reading mode
+    app.zoomFactor = 1.0f;
+    SetKeyboardState(ctrlState);
+    bool zoomInConsumed = handleKeyDown(app, app.hwnd, VK_OEM_PLUS);
+    check(zoomInConsumed && fabsf(app.zoomFactor - 1.1f) < 0.01f, "Ctrl+= zooms in to 1.1");
+    bool zoomOutConsumed = handleKeyDown(app, app.hwnd, VK_OEM_MINUS);
+    check(zoomOutConsumed && fabsf(app.zoomFactor - 1.0f) < 0.01f, "Ctrl+- zooms out back to 1.0");
+
+    // Ctrl+Shift+= (standard US layout Ctrl++)
+    SetKeyboardState(ctrlShiftState);
+    check(handleKeyDown(app, app.hwnd, VK_OEM_PLUS) && fabsf(app.zoomFactor - 1.1f) < 0.01f,
+          "Ctrl+Shift+= zooms in to 1.1");
+    SetKeyboardState(ctrlState);
+
+    // Numpad zoom in / out
+    check(handleKeyDown(app, app.hwnd, VK_ADD) && fabsf(app.zoomFactor - 1.2f) < 0.01f,
+          "Ctrl+Numpad+ zooms in to 1.2");
+    check(handleKeyDown(app, app.hwnd, VK_SUBTRACT) && fabsf(app.zoomFactor - 1.1f) < 0.01f,
+          "Ctrl+Numpad- zooms out to 1.1");
+
+    // Reset zoom with Ctrl+0 and Ctrl+Numpad0
+    check(handleKeyDown(app, app.hwnd, '0') && fabsf(app.zoomFactor - 1.0f) < 0.01f,
+          "Ctrl+0 resets zoom to 1.0");
+    handleKeyDown(app, app.hwnd, VK_OEM_PLUS);
+    check(handleKeyDown(app, app.hwnd, VK_NUMPAD0) && fabsf(app.zoomFactor - 1.0f) < 0.01f,
+          "Ctrl+Numpad0 resets zoom to 1.0");
+
+    // Clamping min (0.5) and max (3.0)
+    for (int i = 0; i < 15; ++i) handleKeyDown(app, app.hwnd, VK_OEM_MINUS);
+    check(fabsf(app.zoomFactor - 0.5f) < 0.01f, "zoom clamps at min 0.5");
+    for (int i = 0; i < 35; ++i) handleKeyDown(app, app.hwnd, VK_OEM_PLUS);
+    check(fabsf(app.zoomFactor - 3.0f) < 0.01f, "zoom clamps at max 3.0");
+    handleKeyDown(app, app.hwnd, '0');
+    check(fabsf(app.zoomFactor - 1.0f) < 0.01f, "Ctrl+0 restores 1.0 from max");
+
+    // Zoom in edit mode preserves buffer state
+    app.editMode = true;
+    app.editorDirty = false;
+    check(handleKeyDown(app, app.hwnd, VK_OEM_PLUS) && fabsf(app.zoomFactor - 1.1f) < 0.01f,
+          "Ctrl+= zooms in during edit mode");
+    check(!app.editorDirty, "zoom during edit mode preserves clean buffer state");
+    check(handleKeyDown(app, app.hwnd, '0') && fabsf(app.zoomFactor - 1.0f) < 0.01f,
+          "Ctrl+0 resets zoom during edit mode");
+    app.editMode = false;
+
+    // Lightbox zoom in / out / reset
+    app.showLightbox = true;
+    app.lightboxZoom = 1.0f;
+    check(handleKeyDown(app, app.hwnd, VK_OEM_PLUS) && app.lightboxZoom > 1.0f,
+          "Ctrl+= zooms lightbox image");
+    check(handleKeyDown(app, app.hwnd, VK_OEM_MINUS), "Ctrl+- zooms lightbox image out");
+    check(handleKeyDown(app, app.hwnd, '0') && fabsf(app.lightboxZoom - 1.0f) < 0.01f,
+          "Ctrl+0 resets lightbox zoom to 1.0");
+    app.showLightbox = false;
+
+    SetKeyboardState(keyboardState);
 
     DestroyWindow(app.hwnd);
     app.hwnd = nullptr;
