@@ -350,6 +350,8 @@ int main(int argc, char** argv) {
 
     SetKeyboardState(keyboardState);
 
+    if (app.hwnd) KillTimer(app.hwnd, TIMER_ZOOM_APPLY);
+    app.zoomApplyPending = false;
     DestroyWindow(app.hwnd);
     app.hwnd = nullptr;
     std::cout << "Input shortcuts: " << failures << " failures\n";

@@ -317,6 +317,11 @@ std::wstring documentCjkFamily(App& app, const wchar_t* family) {
 }
 
 void updateTextFormats(App& app) {
+    if (!app.dwriteFactory) {
+        app.appliedZoomFactor = app.zoomFactor;
+        app.layoutDirty = true;
+        return;
+    }
     // Editor line layouts hold the old format/size
     app.clearEditorLineLayoutCache();
     // Math boxes were laid out against the old theme font
@@ -431,6 +436,7 @@ void updateTextFormats(App& app) {
 }
 
 void updateOverlayFormats(App& app) {
+    if (!app.dwriteFactory) return;
     app.releaseOverlayFormats();
     updateUiFontFallback(app);
 

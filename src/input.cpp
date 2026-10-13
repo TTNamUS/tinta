@@ -499,7 +499,7 @@ void applyZoomDelta(App& app, float delta) {
     app.scrollY *= zoomRatio;
     app.targetScrollY *= zoomRatio;
     if (!app.zoomApplyPending) {
-        updateTextFormats(app);
+        if (app.dwriteFactory) updateTextFormats(app);
         app.zoomApplyPending = true;
         if (app.hwnd) SetTimer(app.hwnd, TIMER_ZOOM_APPLY, 80, nullptr);
     }
@@ -513,7 +513,7 @@ void applyZoomReset(App& app) {
     app.scrollY *= zoomRatio;
     app.targetScrollY *= zoomRatio;
     if (!app.zoomApplyPending) {
-        updateTextFormats(app);
+        if (app.dwriteFactory) updateTextFormats(app);
         app.zoomApplyPending = true;
         if (app.hwnd) SetTimer(app.hwnd, TIMER_ZOOM_APPLY, 80, nullptr);
     }
